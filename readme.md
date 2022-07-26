@@ -1,6 +1,6 @@
 <div align="center">
 <h1> AutoAlignV2 </h1>
-<span><font size="5", > Deformable Feature Aggregation for Dynamic Multi-Modal 3D Object Detection</font></span>
+<h3>Deformable Feature Aggregation for Dynamic Multi-Modal 3D Object Detection</h3>
 <br>
 
 
