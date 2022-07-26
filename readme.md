@@ -1,14 +1,24 @@
-## AutoAlignV2
+<div align="center">
+<h1> AutoAlignV2 </h1>
+<span><font size="5", > Deformable Feature Aggregation for Dynamic Multi-Modal 3D Object Detection</font></span>
+<br>
 
-> Deformable Feature Aggregation for Dynamic Multi-Modal 3D Object Detection
 
-## Note
+by 
+<br>Zehui Chen, Zhenyu Li, Shiquan Zhang, Liangji Fang, Qinhong Jiang, Feng Zhao. 
+<br>
 
-The code is released without rechecking. We will clean up and recheck the code recently.
+<div><a href="https://arxiv.org/abs/2207.10316">[Paper] </a></div> 
 
 <center>
 <img src='figs/framework.png'>
 </center>
+
+</div>
+
+## Note
+
+The code is released without rechecking. We will clean up and recheck the code recently.
 
 ## Get Started
 
