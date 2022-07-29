@@ -18,7 +18,7 @@
 | Model | config | mAP | NDS |
 | - | - | - | - |
 | Baseline 1/8 subset | | - | - |
-| AutoAlignV2 1/8 subset | | - | - |
+| AutoAlignV2 1/8 subset | | 58.5 | 63.2 |
 
 ### nuScenes Test Leaderboard
 | Model | mAP | NDS |
@@ -52,7 +52,7 @@ python tools/create_data.py nuscenes --root-path ./data/nuscenes --out-dir ./dat
 | - | -|
 |Pretrained YOLOX-640 | https://drive.google.com/file/d/1DuA16ocF8Dmfl0nC3NNSKG_Yqq-aXuLH/view?usp=sharing |
 |Pretrained YOLOX-800 | https://drive.google.com/file/d/1YPSjG38qXrV8gYlq5FuhQCjfRIUvhaju/view?usp=sharing |
-| AutoAlignV2 1/8 subset| |
+| AutoAlignV2 1/8 subset| https://drive.google.com/file/d/1F_B4bq5Y6QdkUHQbqeLaEGl-IZHHe1WB/view?usp=sharing |
 
 
 ## Citation
