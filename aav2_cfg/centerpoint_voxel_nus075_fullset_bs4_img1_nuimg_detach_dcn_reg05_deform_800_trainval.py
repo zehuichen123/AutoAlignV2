@@ -1,11 +1,12 @@
-voxel_size = [0.1, 0.1, 0.2]
-point_cloud_range = [-50, -50, -5, 50, 50, 3]
+voxel_size = [0.075, 0.075, 0.2]
+point_cloud_range = [-54, -54, -5, 54, 54, 3]
 norm_cfg = dict(type='SyncBN', requires_grad=True)
 # fp16=dict(loss_scale=512.)
 
 model = dict(
     type='CenterPointFusion',
     img_backbone=dict(type='CSPDarknet', deepen_factor=0.33, widen_factor=0.375),
+    detach=True,
     img_neck=dict(
         type='YOLOXPAFPN',
         in_channels=[96, 192, 384], 
@@ -24,20 +25,22 @@ model = dict(
         with_voxel_center=True,
         point_cloud_range=point_cloud_range,
         fusion_layer=dict(
-            type='MultiVoxelFusionFast',
+            type='MultiVoxelDeformFusion',
             img_channels=96,
             pts_channels=64,
             mid_channels=64,
             out_channels=64,
             img_levels=[0, 1, 2],
+            multi_input='multiply',
             align_corners=False,
+            fix_offset=False,
             activate_out=True,
             fuse_out=True)
     ),
     pts_middle_encoder=dict(
         type='SparseEncoder',
         in_channels=64,
-        sparse_shape=[41, 1024, 1024],
+        sparse_shape=[41, 1440, 1440],
         output_channels=128,
         order=('conv', 'norm', 'act'),
         encoder_channels=((16, 16, 32), (32, 32, 64), (64, 64, 128), (128,
@@ -93,23 +96,22 @@ model = dict(
                 padding=1,
                 groups=4),
             init_bias=-2.19,
-            final_kernel=3
-        ),
+            final_kernel=3),
         loss_cls=dict(type='GaussianFocalLoss', reduction='mean'),
-        loss_bbox=dict(type='L1Loss', reduction='mean', loss_weight=0.25),
+        loss_bbox=dict(type='L1Loss', reduction='mean', loss_weight=0.5),
         norm_bbox=True),
     # model training and testing settings
     train_cfg=dict(
         pts=dict(
             point_cloud_range=point_cloud_range,
-            grid_size=[1024, 1024, 40],
+            grid_size=[1440, 1440, 40],
             voxel_size=voxel_size,
             out_size_factor=8,
             dense_reg=1,
             gaussian_overlap=0.1,
             max_objs=500,
             min_radius=2,
-            code_weights=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.2, 1.2, 0.4, 0.4])),
+            code_weights=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.2, 0.2])),
     test_cfg=dict(
         pts=dict(
             pc_range=point_cloud_range[:2],
@@ -121,6 +123,8 @@ model = dict(
             out_size_factor=8,
             voxel_size=voxel_size[:2],
             nms_type='rotate',
+            use_rotate_nms=True,
+            max_num=83,
             pre_max_size=1000,
             post_max_size=83,
             nms_thr=0.2)))
@@ -154,8 +158,8 @@ db_sampler = dict(
     rate=1.0,
     blending_type=None,
     depth_consistent=True,
-    # check_2D_collision=True,
-    # collision_thr=[0, 0.3, 0.5, 0.7],
+    check_2D_collision=True,
+    collision_thr=[0, 0.3, 0.5, 0.7],
     # collision_in_classes=True,
     mixup=0.7,
     prepare=dict(
@@ -204,20 +208,20 @@ train_pipeline = [
         file_client_args=file_client_args,
         pad_empty_sweeps=True,
         remove_close=True),
-    dict(type='LoadMultiViewImageFromFiles'),
+    dict(type='LoadMultiViewImageFromFiles', file_client_args=file_client_args),
     dict(type='LoadAnnotations3D', with_bbox_3d=True, with_label_3d=True, with_bbox=True, with_label=True),
     dict(type='ObjectSampleV2', db_sampler=db_sampler, sample_2d=True),
     dict(
         type='ResizeV2',
         # img_scale=[(480, 9999), (640, 9999)],
         # multiscale_mode='range',
-        img_scale=(640, 9999),
+        img_scale=(800, 1440),
         keep_ratio=True),
     dict(
         type='GlobalRotScaleTrans',
         rot_range=[-0.3925, 0.3925],
-        scale_ratio_range=[0.95, 1.05],
-        translation_std=[0.0, 0.0, 0.0]),
+        scale_ratio_range=[0.85, 1.15],
+        translation_std=[0.5, 0.5, 0.5]),
     dict(
         type='RandomFlip3D',
         sync_2d=False,
@@ -246,18 +250,20 @@ test_pipeline = [
         file_client_args=file_client_args,
         pad_empty_sweeps=True,
         remove_close=True),
-    dict(type='LoadMultiViewImageFromFiles'),
+    dict(type='LoadMultiViewImageFromFiles', file_client_args=file_client_args),
     dict(
         type='MultiScaleFlipAug3D',
-        img_scale=(640, 9999),
-        pts_scale_ratio=1,
-        flip=False,
+        img_scale=(800, 1440),
+        pts_scale_ratio=1.0,
+        flip=True,
+        pcd_horizontal_flip=True,
+        pcd_vertical_flip=True,
         transforms=[
             dict(
                 type='ResizeV2',
                 # img_scale=[(480, 9999), (640, 9999)],
                 # multiscale_mode='range',
-                img_scale=(640, 9999),
+                img_scale=(800, 1440),
                 keep_ratio=True),
             dict(type='NormalizeV2', **img_norm_cfg),
             dict(type='PadV2', size_divisor=32),
@@ -266,7 +272,7 @@ test_pipeline = [
                 rot_range=[0, 0],
                 scale_ratio_range=[1., 1.],
                 translation_std=[0, 0, 0]),
-            dict(type='RandomFlip3D'),
+            dict(type='RandomFlip3D', sync_2d=False),
             dict(
                 type='PointsRangeFilter', point_cloud_range=point_cloud_range),
             dict(
@@ -292,18 +298,20 @@ eval_pipeline = [
         file_client_args=file_client_args,
         pad_empty_sweeps=True,
         remove_close=True),
-    dict(type='LoadMultiViewImageFromFiles'),
+    dict(type='LoadMultiViewImageFromFiles', file_client_args=file_client_args),
     dict(
         type='MultiScaleFlipAug3D',
-        img_scale=(640, 9999),
+        img_scale=(800, 1440),
         pts_scale_ratio=1,
         flip=False,
+        # pcd_horizontal_flip=True,
+        # pcd_vertical_flip=True,
         transforms=[
             dict(
                 type='ResizeV2',
                 # img_scale=[(480, 9999), (640, 9999)],
                 # multiscale_mode='range',
-                img_scale=(640, 9999),
+                img_scale=(800, 1440),
                 keep_ratio=True),
             dict(type='NormalizeV2', **img_norm_cfg),
             dict(type='PadV2', size_divisor=32),
@@ -324,24 +332,42 @@ eval_pipeline = [
 ]
 
 data = dict(
-    samples_per_gpu=2,
+    samples_per_gpu=4,
     workers_per_gpu=4,
     train=dict(
         type='CBGSDataset',
-        dataset=dict(
-            type=dataset_type,
-            data_root=data_root,
-            ann_file=data_root + 'nuscenes_infos_train.pkl',
-            pipeline=train_pipeline,
-            classes=class_names,
-            modality=input_modality,
-            test_mode=False,
-            use_valid_flag=True,
-            # we use box_type_3d='LiDAR' in kitti and nuscenes dataset
-            # and box_type_3d='Depth' in sunrgbd and scannet dataset.
-            box_type_3d='LiDAR',
-            img_num=1,
-            load_interval=8)),
+        dataset=[
+            dict(
+                type=dataset_type,
+                data_root=data_root,
+                ann_file=data_root + 'nuscenes_infos_train.pkl',
+                pipeline=train_pipeline,
+                classes=class_names,
+                modality=input_modality,
+                test_mode=False,
+                use_valid_flag=True,
+                # we use box_type_3d='LiDAR' in kitti and nuscenes dataset
+                # and box_type_3d='Depth' in sunrgbd and scannet dataset.
+                box_type_3d='LiDAR',
+                img_num=1,
+                load_interval=1
+            ),
+            dict(
+                type=dataset_type,
+                data_root=data_root,
+                ann_file=data_root + 'nuscenes_infos_val.pkl',
+                pipeline=train_pipeline,
+                classes=class_names,
+                modality=input_modality,
+                test_mode=False,
+                use_valid_flag=True,
+                # we use box_type_3d='LiDAR' in kitti and nuscenes dataset
+                # and box_type_3d='Depth' in sunrgbd and scannet dataset.
+                box_type_3d='LiDAR',
+                img_num=1,
+                load_interval=1
+            ),
+        ]),
     val=dict(
         type=dataset_type,
         data_root=data_root,
@@ -355,7 +381,7 @@ data = dict(
     test=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file=data_root + 'nuscenes_infos_val.pkl',
+        ann_file=data_root + 'nuscenes_infos_test.pkl',
         pipeline=test_pipeline,
         classes=class_names,
         modality=input_modality,
@@ -400,6 +426,7 @@ log_config = dict(
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = None
-load_from = 'data/pretrain_models/yolox_tiny_coco_new.pth'  # noqa
+load_from = 'data/pretrain_models/yolox_nus_800_new.pth'  # noqa
 resume_from = None
 workflow = [('train', 1)]
+find_unused_parameters=True

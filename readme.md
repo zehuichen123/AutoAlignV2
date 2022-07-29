@@ -37,6 +37,11 @@ python tools/create_data.py nuscenes --root-path ./data/nuscenes --out-dir ./dat
 ./tools/dist_test.sh aav2_cfg/centerpoint_voxel_nus_8subset_bs4_img1_nuimg_detach_deform_multipts.py work_dirs/centerpoint_voxel_nus_8subset_bs4_img1_nuimg_detach_deform_multipts/epoch_20.pth 8 --eval bbox
 ```
 
+### NOTE
+
+Pretrained YOLOX-640 weight: https://drive.google.com/file/d/1DuA16ocF8Dmfl0nC3NNSKG_Yqq-aXuLH/view?usp=sharing
+Pretrained YOLOX-800 weight: 
+
 ## Performance
 
 ### Nuscenes Test Leaderboard
