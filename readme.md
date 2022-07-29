@@ -1,10 +1,6 @@
 <div align="center">
 <h1> AutoAlignV2 </h1>
 <h3>Deformable Feature Aggregation for Dynamic Multi-Modal 3D Object Detection</h3>
-<br>
-
-
-by 
 <br>Zehui Chen, Zhenyu Li, Shiquan Zhang, Liangji Fang, Qinhong Jiang, Feng Zhao. 
 <br>
 
@@ -15,6 +11,20 @@ by
 </center>
 
 </div>
+
+## Performance
+
+### nuScenes Val set
+| Model | config | mAP | NDS |
+| - | - | - | - |
+| Baseline 1/8 subset | | - | - |
+| AutoAlignV2 1/8 subset | | - | - |
+
+### nuScenes Test Leaderboard
+| Model | mAP | NDS |
+| -|-|-|
+| AutoAlign |  65.8  |  70.9  |
+| AutoAlignV2 | 68.4 | 72.4|
 
 ## Note
 
@@ -37,18 +47,12 @@ python tools/create_data.py nuscenes --root-path ./data/nuscenes --out-dir ./dat
 ./tools/dist_test.sh aav2_cfg/centerpoint_voxel_nus_8subset_bs4_img1_nuimg_detach_deform_multipts.py work_dirs/centerpoint_voxel_nus_8subset_bs4_img1_nuimg_detach_deform_multipts/epoch_20.pth 8 --eval bbox
 ```
 
-### NOTE
-
-Pretrained YOLOX-640 weight: https://drive.google.com/file/d/1DuA16ocF8Dmfl0nC3NNSKG_Yqq-aXuLH/view?usp=sharing
-Pretrained YOLOX-800 weight: 
-
-## Performance
-
-### Nuscenes Test Leaderboard
-| Model | mAP | NDS |
-| -|-|-|
-| AutoAlign |  65.8  |  70.9  |
-| AutoAlignV2 | 68.4 | 72.4|
+### Pretrained Model Weights
+| Model | Weights |
+| - | -|
+|Pretrained YOLOX-640 | https://drive.google.com/file/d/1DuA16ocF8Dmfl0nC3NNSKG_Yqq-aXuLH/view?usp=sharing |
+|Pretrained YOLOX-800 | https://drive.google.com/file/d/1YPSjG38qXrV8gYlq5FuhQCjfRIUvhaju/view?usp=sharing |
+| AutoAlignV2 1/8 subset| |
 
 
 ## Citation
