@@ -13,12 +13,13 @@ from .multi_voxel_fusion import MultiVoxelFusion
 # from .multi_voxel_deform_fusion_v3 import MultiVoxelDeformFusionV3
 from .multi_voxel_fusion_fast import MultiVoxelFusionFast
 from .multi_voxel_fusion_fast_add import MultiVoxelFusionFastAdd
+from .multi_voxel_deformfusion import MultiVoxelDeformFusion
 __all__ = [
     'PointFusion', 'VoteFusion', 'apply_3d_transformation',
     'bbox_2d_transform', 'coord_2d_transform', 'MultiPointFusion',
     # 'DeformPointFusion', 
     'MultiVoxelFusion', 
-    # 'MultiVoxelDeformFusion',
+    'MultiVoxelDeformFusion',
     # 'DeformPointFusionV2', 'MultiVoxelDeformFusionV2Debug', 'MultiVoxelDeformFusionV3',
     'MultiVoxelFusionFast', 'MultiVoxelFusionFastAdd'
 ]
