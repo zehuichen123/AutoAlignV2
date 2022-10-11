@@ -4,7 +4,7 @@
 <br>Zehui Chen, Zhenyu Li, Shiquan Zhang, Liangji Fang, Qinhong Jiang, Feng Zhao. 
 <br>
 
-<div><a href="https://arxiv.org/abs/2207.10316">[Paper] </a></div> 
+<div><a href="https://arxiv.org/abs/2207.10316">[ECCV 2022 Paper] </a></div> 
 
 <center>
 <img src='figs/framework.png'>
