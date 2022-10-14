@@ -32,6 +32,15 @@ The code is released without rechecking. We will clean up and recheck the code r
 
 ## Get Started
 
+### Install Deformable Ops from DeformDETR
+
+```
+cd ops
+sh ./make.sh
+# unit test (should see all checking is True)
+python test.py
+```
+
 ### Prepare Dataset
 ```
 python tools/create_data.py nuscenes --root-path ./data/nuscenes --out-dir ./data/nuscenes --extra-tag nuscenes --version v1.0
